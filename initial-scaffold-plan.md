@@ -73,7 +73,7 @@ Build the service layer first so all business rules, validation, and CRUD behavi
 - [`AGENTS.md`](AGENTS.md:40)
 
 **Status**
-[ ] pending
+[x] done
 
 ## Sub-task 4
 **Intent**

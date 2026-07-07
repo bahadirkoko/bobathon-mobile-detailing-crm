@@ -33,6 +33,12 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** Start sub-task 2 and mark it done in [`initial-scaffold-plan.md`](initial-scaffold-plan.md) when complete.
   **Summary:** Completed sub-task 2 by adding the core SQLAlchemy models and enums for customers, employees, vehicles, appointments, and appointment photos, plus the first set of typed Pydantic schemas and startup-compatible metadata registration.
 
+- **Prompt:** everything looks great, lets go build sub task 3 , log this to @PROMPTS.md as well
+  **Summary:** Started sub-task 3 to implement the shared service layer, validation rules, and local photo storage interface behind reusable business logic.
+
+- **Prompt:** Build sub-task 3 and log it to [`PROMPTS.md`](PROMPTS.md) as well.
+  **Summary:** Completed sub-task 3 by adding reusable CRUD services for customers, employees, vehicles, and appointments, plus service-layer exceptions and a local appointment photo storage service that writes to [`app/static/uploads/`](app/static/uploads/).
+
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
 
