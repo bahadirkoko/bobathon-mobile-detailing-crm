@@ -39,6 +39,12 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** Build sub-task 3 and log it to [`PROMPTS.md`](PROMPTS.md) as well.
   **Summary:** Completed sub-task 3 by adding reusable CRUD services for customers, employees, vehicles, and appointments, plus service-layer exceptions and a local appointment photo storage service that writes to [`app/static/uploads/`](app/static/uploads/).
 
+- **Prompt:** everything good lets go and build sub task 4 and keep logging to @PROMPTS.md file as well,
+  **Summary:** Started sub-task 4 to connect the service layer to FastAPI routes, demo auth/session helpers, and MCP tool definitions.
+
+- **Prompt:** Build sub-task 4 and keep logging to [`PROMPTS.md`](PROMPTS.md) as well.
+  **Summary:** Completed sub-task 4 by wiring JSON CRUD routes, demo user auth helpers, service-error-to-HTTP translation, and snake_case MCP tools that call the same service layer without duplicating business logic.
+
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
 

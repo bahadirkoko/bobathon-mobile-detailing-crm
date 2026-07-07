@@ -98,7 +98,7 @@ Expose the service layer through web routes first and then MCP tools, preserving
 - [`AGENTS.md`](AGENTS.md:34)
 
 **Status**
-[ ] pending
+[x] done
 
 ## Sub-task 5
 **Intent**
