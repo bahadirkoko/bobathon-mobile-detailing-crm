@@ -48,7 +48,7 @@ Establish the domain model and persistence foundation for the core entities only
 - [`AGENTS.md`](AGENTS.md:27)
 
 **Status**
-[ ] pending
+[x] done
 
 ## Sub-task 3
 **Intent**

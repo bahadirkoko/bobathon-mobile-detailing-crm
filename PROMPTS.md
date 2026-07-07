@@ -27,6 +27,12 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** There's no .gitignore file in the project root. Create one now with standard Python exclusions plus project-specific ones, keep `app/static/uploads/.gitkeep` tracked, and untrack anything already excluded.
   **Summary:** Added the root [`.gitignore`](.gitignore) with the requested Python and project-specific ignore rules, including the negation for [`app/static/uploads/.gitkeep`](app/static/uploads/.gitkeep). Checked Git tracking after the earlier compile step and there were no excluded files currently tracked.
 
+- **Prompt:** everything seems working good, now lets good start with sub task2, and Log this to PROMPTS.md per the AGENTS.md rule, and mark Sub-task 2 done in initial-scaffold-plan.md when complete.
+  **Summary:** Started sub-task 2 to add the core database models, schemas, and startup-driven table creation for the first four entities.
+
+- **Prompt:** Start sub-task 2 and mark it done in [`initial-scaffold-plan.md`](initial-scaffold-plan.md) when complete.
+  **Summary:** Completed sub-task 2 by adding the core SQLAlchemy models and enums for customers, employees, vehicles, appointments, and appointment photos, plus the first set of typed Pydantic schemas and startup-compatible metadata registration.
+
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
 
