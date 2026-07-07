@@ -8,10 +8,14 @@
     <h2>Book a Mobile Detail</h2>
     <p class="muted">Demo flow: create customer, vehicle, and appointment in one step.</p>
     <form hx-post="/booking" hx-target="#booking-result" hx-swap="innerHTML">
-      <input type="text" name="customer_name" placeholder="Customer name" required />
+      <input type="text" name="customer_first_name" placeholder="Customer first name" required />
+      <input type="text" name="customer_last_name" placeholder="Customer last name" required />
       <input type="text" name="customer_phone" placeholder="Phone" required />
       <input type="email" name="customer_email" placeholder="Email optional" />
-      <input type="text" name="customer_address" placeholder="Customer address" required />
+      <input type="text" name="customer_street_address" placeholder="Street address" required />
+      <input type="text" name="customer_city" placeholder="City" required />
+      <input type="text" name="customer_state" placeholder="State" required />
+      <input type="text" name="customer_zipcode" placeholder="Zip code" required />
       <input type="text" name="vehicle_make" placeholder="Vehicle make" required />
       <input type="text" name="vehicle_model" placeholder="Vehicle model" required />
       <select name="vehicle_size" required>

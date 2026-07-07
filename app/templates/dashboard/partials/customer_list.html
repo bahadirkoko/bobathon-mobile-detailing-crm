@@ -13,16 +13,20 @@
     <tbody>
       {% for customer in customers %}
       <tr>
-        <td>{{ customer.full_name }}</td>
+        <td>{{ customer.first_name }} {{ customer.last_name }}</td>
         <td>{{ customer.phone }}</td>
         <td>{{ customer.email or '-' }}</td>
-        <td>{{ customer.address }}</td>
+        <td>{{ customer.default_street_address }}, {{ customer.default_city }}, {{ customer.default_state }} {{ customer.default_zipcode }}</td>
         <td>
           <form hx-post="/dashboard/customers/{{ customer.id }}/edit" hx-target="#customer-list" hx-swap="outerHTML">
-            <input type="text" name="full_name" value="{{ customer.full_name }}" required />
+            <input type="text" name="first_name" value="{{ customer.first_name }}" required />
+            <input type="text" name="last_name" value="{{ customer.last_name }}" required />
             <input type="text" name="phone" value="{{ customer.phone }}" required />
             <input type="email" name="email" value="{{ customer.email or '' }}" />
-            <input type="text" name="address" value="{{ customer.address }}" required />
+            <input type="text" name="default_street_address" value="{{ customer.default_street_address }}" required />
+            <input type="text" name="default_city" value="{{ customer.default_city }}" required />
+            <input type="text" name="default_state" value="{{ customer.default_state }}" required />
+            <input type="text" name="default_zipcode" value="{{ customer.default_zipcode }}" required />
             <button type="submit">Update</button>
           </form>
         </td>

@@ -25,6 +25,7 @@ def healthcheck() -> dict[str, str]:
 def login_page(request: Request) -> HTMLResponse:
     """Render the demo login page."""
     return templates.TemplateResponse(
+        request,
         "login.html",
         {"request": request, "demo_users": get_demo_users().values()},
     )

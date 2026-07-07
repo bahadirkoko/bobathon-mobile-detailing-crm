@@ -11,7 +11,7 @@
       {% for vehicle in vehicles %}
       <tr>
         <td>#{{ vehicle.id }}</td>
-        <td>{{ vehicle.customer.full_name }}</td>
+        <td>{{ vehicle.customer.first_name }} {{ vehicle.customer.last_name }}</td>
         <td>{{ vehicle.make }} {{ vehicle.model }}</td>
         <td>{{ vehicle.vehicle_size }}</td>
         <td>{{ vehicle.notes or '-' }}</td>

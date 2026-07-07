@@ -34,6 +34,7 @@ def customers_page(
 ) -> HTMLResponse:
     """Render the customer management page."""
     return templates.TemplateResponse(
+        request,
         "dashboard/customers.html",
         {"request": request, "user": user, "customers": customer_service.list_customers(session)},
     )
@@ -42,20 +43,34 @@ def customers_page(
 @router.post("/customers", response_class=HTMLResponse)
 def create_customer_partial(
     request: Request,
-    full_name: str = Form(...),
+    first_name: str = Form(...),
+    last_name: str = Form(...),
     phone: str = Form(...),
     email: str = Form(default=""),
-    address: str = Form(...),
+    default_street_address: str = Form(...),
+    default_city: str = Form(...),
+    default_state: str = Form(...),
+    default_zipcode: str = Form(...),
     customer_service: CustomerService = Depends(get_customer_service),
     session: Session = Depends(get_db_session),
 ) -> HTMLResponse:
     """Create a customer and return the updated customer list partial."""
     customer_service.create_customer(
         session,
-        CustomerCreate(full_name=full_name, phone=phone, email=email or None, address=address),
+        CustomerCreate(
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            email=email or None,
+            default_street_address=default_street_address,
+            default_city=default_city,
+            default_state=default_state,
+            default_zipcode=default_zipcode,
+        ),
     )
     customers = customer_service.list_customers(session)
     return templates.TemplateResponse(
+        request,
         "dashboard/partials/customer_list.html",
         {"request": request, "customers": customers},
     )
@@ -65,10 +80,14 @@ def create_customer_partial(
 def update_customer_partial(
     request: Request,
     customer_id: int,
-    full_name: str = Form(...),
+    first_name: str = Form(...),
+    last_name: str = Form(...),
     phone: str = Form(...),
     email: str = Form(default=""),
-    address: str = Form(...),
+    default_street_address: str = Form(...),
+    default_city: str = Form(...),
+    default_state: str = Form(...),
+    default_zipcode: str = Form(...),
     customer_service: CustomerService = Depends(get_customer_service),
     session: Session = Depends(get_db_session),
 ) -> HTMLResponse:
@@ -76,10 +95,20 @@ def update_customer_partial(
     customer_service.update_customer(
         session,
         customer_id,
-        CustomerUpdate(full_name=full_name, phone=phone, email=email or None, address=address),
+        CustomerUpdate(
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            email=email or None,
+            default_street_address=default_street_address,
+            default_city=default_city,
+            default_state=default_state,
+            default_zipcode=default_zipcode,
+        ),
     )
     customers = customer_service.list_customers(session)
     return templates.TemplateResponse(
+        request,
         "dashboard/partials/customer_list.html",
         {"request": request, "customers": customers},
     )
@@ -105,7 +134,7 @@ def appointments_page(
         "vehicles": vehicle_service.list_vehicles(session),
         "statuses": list(AppointmentStatus),
     }
-    return templates.TemplateResponse("dashboard/appointments.html", context)
+    return templates.TemplateResponse(request, "dashboard/appointments.html", context)
 
 
 @router.post("/appointments", response_class=HTMLResponse)
@@ -136,6 +165,7 @@ def create_appointment_partial(
     )
     appointments = appointment_service.list_appointments(session)
     return templates.TemplateResponse(
+        request,
         "dashboard/partials/appointment_list.html",
         {"request": request, "appointments": appointments},
     )
@@ -153,6 +183,7 @@ def update_appointment_status_partial(
     appointment_service.update_appointment_status(session, appointment_id, status)
     appointments = appointment_service.list_appointments(session)
     return templates.TemplateResponse(
+        request,
         "dashboard/partials/appointment_list.html",
         {"request": request, "appointments": appointments},
     )
@@ -167,6 +198,7 @@ def vehicles_page(
 ) -> HTMLResponse:
     """Render the vehicle list page."""
     return templates.TemplateResponse(
+        request,
         "dashboard/vehicles.html",
         {"request": request, "user": user, "vehicles": vehicle_service.list_vehicles(session)},
     )
@@ -181,6 +213,7 @@ def employees_page(
 ) -> HTMLResponse:
     """Render the employee list page."""
     return templates.TemplateResponse(
+        request,
         "dashboard/employees.html",
         {"request": request, "user": user, "employees": employee_service.list_employees(session)},
     )
@@ -206,6 +239,7 @@ async def upload_appointment_photo_partial(
     )
     appointment = appointment_service.get_appointment(session, appointment_id)
     return templates.TemplateResponse(
+        request,
         "reports/appointment_report.html",
         {"request": request, "user": user, "appointment": appointment},
     )
@@ -222,6 +256,7 @@ def appointment_report_page(
     """Render the completed appointment report page."""
     appointment = appointment_service.get_appointment(session, appointment_id)
     return templates.TemplateResponse(
+        request,
         "reports/appointment_report.html",
         {"request": request, "user": user, "appointment": appointment},
     )

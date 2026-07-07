@@ -150,7 +150,7 @@ Add validation, automated tests, and CI last in the scaffold sequence so every e
 - [`AGENTS.md`](AGENTS.md:43)
 
 **Status**
-[ ] pending
+[x] done
 
 ## Open Decisions Confirmed
 - Use `app/` as the main application package.

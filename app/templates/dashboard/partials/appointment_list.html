@@ -27,9 +27,9 @@
             </select>
           </form>
         </td>
-        <td>{{ appointment.customer.full_name }}</td>
+        <td>{{ appointment.customer.first_name }} {{ appointment.customer.last_name }}</td>
         <td>{{ appointment.vehicle.make }} {{ appointment.vehicle.model }}</td>
-        <td>{{ appointment.employee.full_name if appointment.employee else 'Unassigned' }}</td>
+        <td>{{ appointment.employee.first_name ~ ' ' ~ appointment.employee.last_name if appointment.employee else 'Unassigned' }}</td>
         <td>{{ appointment.scheduled_at }}</td>
         <td>
           {% if appointment.status.value == 'completed' %}

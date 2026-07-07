@@ -32,16 +32,20 @@ def booking_page(
         "customers": customer_service.list_customers(session),
         "vehicles": vehicle_service.list_vehicles(session),
     }
-    return templates.TemplateResponse("booking/index.html", context)
+    return templates.TemplateResponse(request, "booking/index.html", context)
 
 
 @router.post("/booking", response_class=HTMLResponse)
 def create_booking(
     request: Request,
-    customer_name: str = Form(...),
+    customer_first_name: str = Form(...),
+    customer_last_name: str = Form(...),
     customer_phone: str = Form(...),
     customer_email: str = Form(default=""),
-    customer_address: str = Form(...),
+    customer_street_address: str = Form(...),
+    customer_city: str = Form(...),
+    customer_state: str = Form(...),
+    customer_zipcode: str = Form(...),
     vehicle_make: str = Form(...),
     vehicle_model: str = Form(...),
     vehicle_size: str = Form(...),
@@ -58,10 +62,14 @@ def create_booking(
     customer = customer_service.create_customer(
         session,
         CustomerCreate(
-            full_name=customer_name,
+            first_name=customer_first_name,
+            last_name=customer_last_name,
             phone=customer_phone,
             email=customer_email or None,
-            address=customer_address,
+            default_street_address=customer_street_address,
+            default_city=customer_city,
+            default_state=customer_state,
+            default_zipcode=customer_zipcode,
         ),
     )
     vehicle = vehicle_service.create_vehicle(
@@ -85,6 +93,7 @@ def create_booking(
         ),
     )
     return templates.TemplateResponse(
+        request,
         "booking/_confirmation.html",
         {"request": request, "appointment": appointment, "customer": customer, "vehicle": vehicle},
     )

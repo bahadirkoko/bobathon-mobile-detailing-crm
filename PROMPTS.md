@@ -57,6 +57,27 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** Add a simple `/login` route and template that sets a signed session cookie for demo browser access, and update auth to prefer the cookie before the `X-Demo-User` header fallback.
   **Summary:** Completed the browser demo-auth fix by adding a login page, signed `itsdangerous` session cookie handling, logout support, and cookie-first user resolution while preserving header-based auth for MCP and tests.
 
+- **Prompt:** The TemplateResponse argument-order bug is still happening. Grep every `TemplateResponse(` call in `app/`, show every match, fix all of them systematically, compile, and smoke-test `/` and `/login` so no call site is missed.
+  **Summary:** Started a full audit of every `TemplateResponse` usage to normalize the argument order against the installed Starlette version, then validate with compile and HTTP smoke tests.
+
+- **Prompt:** Grep every `TemplateResponse(` call site, fix every argument-order bug, compile, and smoke-test `/` and `/login` so no TemplateResponse call site is missed.
+  **Summary:** Audited and fixed every `TemplateResponse` call under [`app/`](app), then re-ran grep to confirm the updated call sites. Compile passed, but runtime HTTP smoke tests were blocked in this environment because project dependencies are not installed yet (`fastapi` and `uvicorn` are missing), so the server could not be started here.
+
+- **Prompt:** everything looks good, we might have small bugs and needed improvements later on but for now lets focus on sub task 6, and finalzie it then we can focus on small bugs and fix them
+  **Summary:** Started sub-task 6 to add the initial automated test suite and finalize the CI-oriented testing setup before returning to bug fixes.
+
+- **Prompt:** Focus on sub-task 6 and finalize it before returning to smaller bug fixes and improvements.
+  **Summary:** Completed sub-task 6 by adding service-layer unit tests for the core entities and photo storage flow, plus lightweight route and MCP smoke tests, while keeping CI aligned with pytest and coverage reporting.
+
+- **Prompt:** Normalize the data model fully, but keep auth out of scope for this refactor. First produce a concrete refactor plan file mapping current classes/tables to target ones, exact files changing, and execution order. After approval, implement in six stages with checkpoints, compileall + pytest + grep after each stage, and reset the local database at the start because there are no migrations.
+  **Summary:** Locked the staged normalization strategy and checkpoint workflow. The next step is to create and review a repo-specific refactor plan before any code changes are made.
+
+- **Prompt:** Approve the normalized schema refactor plan and begin Stage 1 only, with a checkpoint before Stage 2.
+  **Summary:** Started Stage 1 of the staged normalization refactor: local DB reset plus Customer and Employee normalization, with validation and grep checks required before proceeding.
+
+- **Prompt:** Complete Stage 1 only, then stop and report compileall, pytest, and grep results before moving to Stage 2.
+  **Summary:** Stage 1 code changes are in place: Customer and Employee were normalized across models, schemas, service inputs, routes, templates, and service tests. `python3 -m compileall app tests` passed; `pytest` could not run in this environment because the `pytest` command is not installed; leftover `full_name` references remain only in demo auth code, which is intentionally out of scope for this refactor.
+
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
 

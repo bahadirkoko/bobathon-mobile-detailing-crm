@@ -11,7 +11,7 @@
       {% for employee in employees %}
       <tr>
         <td>#{{ employee.id }}</td>
-        <td>{{ employee.full_name }}</td>
+        <td>{{ employee.first_name }} {{ employee.last_name }}</td>
         <td>{{ employee.role.value }}</td>
         <td>{{ employee.phone }}</td>
         <td>{{ employee.email or '-' }}</td>

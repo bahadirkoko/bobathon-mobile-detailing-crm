@@ -9,7 +9,7 @@
     <form hx-post="/dashboard/appointments" hx-target="#appointment-list" hx-swap="outerHTML">
       <select name="customer_id" required>
         <option value="">Select customer</option>
-        {% for customer in customers %}<option value="{{ customer.id }}">{{ customer.full_name }}</option>{% endfor %}
+        {% for customer in customers %}<option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }}</option>{% endfor %}
       </select>
       <select name="vehicle_id" required>
         <option value="">Select vehicle</option>
@@ -17,7 +17,7 @@
       </select>
       <select name="employee_id">
         <option value="">Unassigned</option>
-        {% for employee in employees %}<option value="{{ employee.id }}">{{ employee.full_name }}</option>{% endfor %}
+        {% for employee in employees %}<option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>{% endfor %}
       </select>
       <input type="datetime-local" name="scheduled_at" required />
       <input type="text" name="service_name" placeholder="Service name" required />

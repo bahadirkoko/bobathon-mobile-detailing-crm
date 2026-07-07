@@ -39,4 +39,4 @@ def dashboard_home(
         "employees": employee_service.list_employees(session),
         "vehicles": vehicle_service.list_vehicles(session),
     }
-    return templates.TemplateResponse("dashboard/index.html", context)
+    return templates.TemplateResponse(request, "dashboard/index.html", context)
