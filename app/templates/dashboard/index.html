@@ -3,8 +3,29 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<section>
-  <h2>Dashboard</h2>
-  <p>Shared admin and employee views will be added in later subtasks.</p>
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Welcome {{ user.full_name }}</h2>
+    <p class="muted">Role: {{ user.role }}</p>
+    <div class="actions">
+      <a href="/dashboard/customers">Manage Customers</a>
+      <a href="/dashboard/appointments">Manage Appointments</a>
+      <a href="/dashboard/vehicles">View Vehicles</a>
+      <a href="/dashboard/employees">View Employees</a>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Quick Stats</h2>
+    <ul>
+      <li>{{ customers|length }} customers</li>
+      <li>{{ appointments|length }} appointments</li>
+      <li>{{ vehicles|length }} vehicles</li>
+      <li>{{ employees|length }} employees</li>
+    </ul>
+  </div>
+</section>
+<section class="card">
+  <h2>Recent Appointments</h2>
+  {% include "dashboard/partials/appointment_list.html" %}
 </section>
 {% endblock %}

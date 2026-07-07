@@ -3,8 +3,39 @@
 {% block title %}Appointment Report{% endblock %}
 
 {% block content %}
-<section>
-  <h2>Appointment Report</h2>
-  <p>Completed appointment report rendering will be added in later subtasks.</p>
+<section class="card">
+  <h2>Appointment Report #{{ appointment.id }}</h2>
+  <p><strong>Customer:</strong> {{ appointment.customer.full_name }}</p>
+  <p><strong>Vehicle:</strong> {{ appointment.vehicle.make }} {{ appointment.vehicle.model }}</p>
+  <p><strong>Service:</strong> {{ appointment.service_name }}</p>
+  <p><strong>Status:</strong> {{ appointment.status.value }}</p>
+  <p><strong>Completed:</strong> {{ appointment.completed_at or 'Not completed yet' }}</p>
+  <p><strong>Shareable link:</strong> <a href="/dashboard/appointments/{{ appointment.id }}/report">/dashboard/appointments/{{ appointment.id }}/report</a></p>
+</section>
+
+<section class="card">
+  <h2>Upload Before/After Photos</h2>
+  <form hx-post="/dashboard/appointments/{{ appointment.id }}/photos" hx-encoding="multipart/form-data" hx-target="body" hx-swap="outerHTML">
+    <select name="tag" required>
+      <option value="before">Before</option>
+      <option value="after">After</option>
+    </select>
+    <input type="file" name="photo" accept="image/*" required />
+    <button type="submit">Upload Photo</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Photo Gallery</h2>
+  <div class="photo-grid">
+    {% for photo in appointment.photos %}
+    <article class="card">
+      <p><strong>{{ photo.tag.value|capitalize }}</strong></p>
+      <img src="/{{ photo.file_path }}" alt="{{ photo.tag.value }} photo" />
+    </article>
+    {% else %}
+    <p class="muted">No photos uploaded yet.</p>
+    {% endfor %}
+  </div>
 </section>
 {% endblock %}

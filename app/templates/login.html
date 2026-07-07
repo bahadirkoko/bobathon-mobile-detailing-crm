@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="card" style="max-width: 480px; margin: 0 auto;">
+  <h2>Demo Login</h2>
+  <p class="muted">Choose a demo user to access the dashboard in the browser.</p>
+  <form method="post" action="/login">
+    <label for="email">Demo user</label>
+    <select id="email" name="email" required>
+      {% for user in demo_users %}
+      <option value="{{ user.email }}">{{ user.full_name }} — {{ user.role.value }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Enter Dashboard</button>
+  </form>
+</section>
+{% endblock %}

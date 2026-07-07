@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Vehicles{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>Vehicles</h2>
+  <table class="table">
+    <thead><tr><th>ID</th><th>Owner</th><th>Vehicle</th><th>Size</th><th>Notes</th></tr></thead>
+    <tbody>
+      {% for vehicle in vehicles %}
+      <tr>
+        <td>#{{ vehicle.id }}</td>
+        <td>{{ vehicle.customer.full_name }}</td>
+        <td>{{ vehicle.make }} {{ vehicle.model }}</td>
+        <td>{{ vehicle.vehicle_size }}</td>
+        <td>{{ vehicle.notes or '-' }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">No vehicles yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -37,7 +37,12 @@ class AppointmentService:
         """Return all appointments ordered by newest first."""
         statement: Select[tuple[Appointment]] = (
             select(Appointment)
-            .options(selectinload(Appointment.photos))
+            .options(
+                selectinload(Appointment.photos),
+                selectinload(Appointment.customer),
+                selectinload(Appointment.vehicle),
+                selectinload(Appointment.employee),
+            )
             .order_by(Appointment.scheduled_at.desc())
         )
         return list(session.scalars(statement))
@@ -46,7 +51,12 @@ class AppointmentService:
         """Return an appointment by identifier."""
         statement = (
             select(Appointment)
-            .options(selectinload(Appointment.photos))
+            .options(
+                selectinload(Appointment.photos),
+                selectinload(Appointment.customer),
+                selectinload(Appointment.vehicle),
+                selectinload(Appointment.employee),
+            )
             .where(Appointment.id == appointment_id)
         )
         appointment = session.scalar(statement)

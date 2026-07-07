@@ -125,7 +125,7 @@ Add the server-rendered UI layer for the public booking flow and shared internal
 - [`AGENTS.md`](AGENTS.md:35)
 
 **Status**
-[ ] pending
+[x] done
 
 ## Sub-task 6
 **Intent**

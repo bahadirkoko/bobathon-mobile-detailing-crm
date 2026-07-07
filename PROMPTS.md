@@ -45,6 +45,18 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** Build sub-task 4 and keep logging to [`PROMPTS.md`](PROMPTS.md) as well.
   **Summary:** Completed sub-task 4 by wiring JSON CRUD routes, demo user auth helpers, service-error-to-HTTP translation, and snake_case MCP tools that call the same service layer without duplicating business logic.
 
+- **Prompt:** everything seems great, lets build task 5 , and keeping logging to @PROMPTS.md
+  **Summary:** Started sub-task 5 to add the server-rendered booking flow, shared dashboard views, report page, and HTMX-based form/list interactions.
+
+- **Prompt:** Build task 5 and keep logging to [`PROMPTS.md`](PROMPTS.md).
+  **Summary:** Completed sub-task 5 by adding public booking pages, dashboard/customer/appointment/vehicle/employee views, HTMX partial updates, and a server-rendered appointment report page with labeled photo uploads and shareable report links.
+
+- **Prompt:** Visiting /dashboard in a browser fails with "Missing demo user" since browsers can't send custom X-Demo-User headers on normal navigation. Add a simple login form that sets a signed session cookie via `itsdangerous`, update `get_current_user` to check the cookie first before falling back to `X-Demo-User`, and redirect to `/dashboard` after login.
+  **Summary:** Started a browser-friendly demo auth fix by adding a signed session-cookie login flow while preserving the header-based auth path for MCP and tests.
+
+- **Prompt:** Add a simple `/login` route and template that sets a signed session cookie for demo browser access, and update auth to prefer the cookie before the `X-Demo-User` header fallback.
+  **Summary:** Completed the browser demo-auth fix by adding a login page, signed `itsdangerous` session cookie handling, logout support, and cookie-first user resolution while preserving header-based auth for MCP and tests.
+
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
 

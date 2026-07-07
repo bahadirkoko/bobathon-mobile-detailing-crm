@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Create Customer</h2>
+    <form hx-post="/dashboard/customers" hx-target="#customer-list" hx-swap="outerHTML">
+      <input type="text" name="full_name" placeholder="Full name" required />
+      <input type="text" name="phone" placeholder="Phone" required />
+      <input type="email" name="email" placeholder="Email optional" />
+      <input type="text" name="address" placeholder="Address" required />
+      <button type="submit">Save Customer</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Search/Edit Customers</h2>
+    <p class="muted">For the demo, edit directly in the list below.</p>
+  </div>
+</section>
+{% include "dashboard/partials/customer_list.html" %}
+{% endblock %}

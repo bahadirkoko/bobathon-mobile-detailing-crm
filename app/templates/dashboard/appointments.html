@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Create Appointment</h2>
+    <form hx-post="/dashboard/appointments" hx-target="#appointment-list" hx-swap="outerHTML">
+      <select name="customer_id" required>
+        <option value="">Select customer</option>
+        {% for customer in customers %}<option value="{{ customer.id }}">{{ customer.full_name }}</option>{% endfor %}
+      </select>
+      <select name="vehicle_id" required>
+        <option value="">Select vehicle</option>
+        {% for vehicle in vehicles %}<option value="{{ vehicle.id }}">{{ vehicle.make }} {{ vehicle.model }}</option>{% endfor %}
+      </select>
+      <select name="employee_id">
+        <option value="">Unassigned</option>
+        {% for employee in employees %}<option value="{{ employee.id }}">{{ employee.full_name }}</option>{% endfor %}
+      </select>
+      <input type="datetime-local" name="scheduled_at" required />
+      <input type="text" name="service_name" placeholder="Service name" required />
+      <input type="number" name="price_cents" placeholder="Price in cents" min="0" required />
+      <input type="text" name="service_address" placeholder="Service address" required />
+      <button type="submit">Save Appointment</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Completed Reports</h2>
+    <p class="muted">Completed appointments show a shareable report link in the list below.</p>
+  </div>
+</section>
+{% include "dashboard/partials/appointment_list.html" %}
+{% endblock %}

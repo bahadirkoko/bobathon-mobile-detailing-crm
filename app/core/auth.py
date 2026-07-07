@@ -6,8 +6,11 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from fastapi import Depends, HTTPException, Request, status
+from itsdangerous import BadSignature, URLSafeSerializer
 
 from app.core.config import get_settings
+
+SESSION_COOKIE_NAME = "demo_session"
 
 
 class UserRole(StrEnum):
@@ -57,8 +60,38 @@ def get_demo_users() -> dict[str, DemoUser]:
     return users
 
 
+def get_session_serializer() -> URLSafeSerializer:
+    """Return the serializer used for signed demo session cookies."""
+    settings = get_settings()
+    return URLSafeSerializer(settings.app_secret_key, salt="demo-session")
+
+
+def create_session_cookie_value(email: str) -> str:
+    """Create a signed session-cookie payload for the given email."""
+    return get_session_serializer().dumps({"email": email})
+
+
+def get_user_from_cookie(request: Request) -> DemoUser | None:
+    """Resolve a demo user from the signed session cookie if present."""
+    signed_value = request.cookies.get(SESSION_COOKIE_NAME)
+    if not signed_value:
+        return None
+    try:
+        payload = get_session_serializer().loads(signed_value)
+    except BadSignature:
+        return None
+    email = payload.get("email")
+    if not email:
+        return None
+    return get_demo_users().get(email)
+
+
 def get_current_user(request: Request) -> DemoUser:
-    """Resolve the current demo user from a request header."""
+    """Resolve the current demo user from cookie first, then header."""
+    cookie_user = get_user_from_cookie(request)
+    if cookie_user is not None:
+        return cookie_user
+
     email = request.headers.get("X-Demo-User")
     if not email:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing demo user.")

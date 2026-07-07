@@ -1,10 +1,35 @@
 {% extends "base.html" %}
 
-{% block title %}Booking{% endblock %}
+{% block title %}Book a Detail{% endblock %}
 
 {% block content %}
-<section>
-  <h2>Public Booking</h2>
-  <p>Booking templates will be added in later subtasks.</p>
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Book a Mobile Detail</h2>
+    <p class="muted">Demo flow: create customer, vehicle, and appointment in one step.</p>
+    <form hx-post="/booking" hx-target="#booking-result" hx-swap="innerHTML">
+      <input type="text" name="customer_name" placeholder="Customer name" required />
+      <input type="text" name="customer_phone" placeholder="Phone" required />
+      <input type="email" name="customer_email" placeholder="Email optional" />
+      <input type="text" name="customer_address" placeholder="Customer address" required />
+      <input type="text" name="vehicle_make" placeholder="Vehicle make" required />
+      <input type="text" name="vehicle_model" placeholder="Vehicle model" required />
+      <select name="vehicle_size" required>
+        <option value="">Select vehicle size</option>
+        <option value="sedan">Sedan</option>
+        <option value="suv">SUV</option>
+        <option value="truck">Truck</option>
+      </select>
+      <input type="text" name="service_name" placeholder="Service name" required />
+      <input type="number" name="price_cents" placeholder="Price in cents" min="0" required />
+      <input type="text" name="service_address" placeholder="Service address" required />
+      <input type="datetime-local" name="scheduled_at" required />
+      <button type="submit">Book Appointment</button>
+    </form>
+  </div>
+  <div class="card" id="booking-result">
+    <h2>Booking Result</h2>
+    <p class="muted">Confirmation will render here.</p>
+  </div>
 </section>
 {% endblock %}

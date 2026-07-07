@@ -1,0 +1,4 @@
+<h2>Booking Confirmed</h2>
+<p><strong>{{ customer.full_name }}</strong> is booked for <strong>{{ appointment.service_name }}</strong>.</p>
+<p class="muted">Appointment #{{ appointment.id }} for {{ vehicle.make }} {{ vehicle.model }} at {{ appointment.scheduled_at }}.</p>
+<p>Price: ${{ '%.2f' | format(appointment.price_cents / 100) }}</p>

@@ -1,0 +1,47 @@
+<section class="card" id="appointment-list">
+  <h2>Appointment List</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Service</th>
+        <th>Status</th>
+        <th>Customer</th>
+        <th>Vehicle</th>
+        <th>Employee</th>
+        <th>Scheduled</th>
+        <th>Report</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appointment in appointments %}
+      <tr>
+        <td>#{{ appointment.id }}</td>
+        <td>{{ appointment.service_name }}</td>
+        <td>
+          <form hx-post="/dashboard/appointments/{{ appointment.id }}/status" hx-target="#appointment-list" hx-swap="outerHTML">
+            <select name="status" onchange="this.form.requestSubmit()">
+              {% for status in ['scheduled', 'in_progress', 'completed', 'cancelled'] %}
+              <option value="{{ status }}" {% if appointment.status.value == status %}selected{% endif %}>{{ status }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </td>
+        <td>{{ appointment.customer.full_name }}</td>
+        <td>{{ appointment.vehicle.make }} {{ appointment.vehicle.model }}</td>
+        <td>{{ appointment.employee.full_name if appointment.employee else 'Unassigned' }}</td>
+        <td>{{ appointment.scheduled_at }}</td>
+        <td>
+          {% if appointment.status.value == 'completed' %}
+          <a href="/dashboard/appointments/{{ appointment.id }}/report">Open report</a>
+          {% else %}
+          <span class="muted">Pending</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="muted">No appointments yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
