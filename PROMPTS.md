@@ -135,6 +135,10 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
 
+- **Prompt:** give me a read me file, with problem statement and what kind of features we have tech stack how to work this project etc, a file that is helpful for outsiders so they can udnerstand problem statement and solution and tech stuff
+  **Summary:** Added a public-facing [`README.md`](README.md) that explains the business problem, solution, current feature set, architecture, tech stack, local setup, commands, and demo usage so outside readers can understand the project quickly.
+
+
 - **Prompt:** continue
   **Summary:** Verified the last dashboard follow-up changes, confirmed vehicle delete is now wired into the customer-scoped vehicle management UI, the Vehicles nav tab is removed from [`app/templates/base.html`](app/templates/base.html), and employees now have create + edit only on [`app/templates/dashboard/employees.html`](app/templates/dashboard/employees.html). `python3 -m compileall app tests` passed.
 
