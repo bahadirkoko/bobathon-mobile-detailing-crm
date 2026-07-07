@@ -12,6 +12,7 @@ from app.api.dependencies import (
     get_appointment_service,
     get_customer_service,
     get_employee_service,
+    get_package_service,
     get_vehicle_service,
 )
 from app.core.auth import DemoUser, get_current_user
@@ -19,7 +20,10 @@ from app.db.session import get_db_session
 from app.models.enums import AppointmentPhotoTag, AppointmentStatus
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 from app.schemas.customer import CustomerCreate, CustomerUpdate
-from app.services import AppointmentService, CustomerService, EmployeeService, VehicleService
+from app.schemas.employee import EmployeeCreate, EmployeeUpdate
+from app.schemas.package import PackageCreate, PackageUpdate
+from app.schemas.vehicle import VehicleCreate, VehicleUpdate
+from app.services import AppointmentService, CustomerService, EmployeeService, PackageService, VehicleService
 from app.web import templates
 
 router = APIRouter(prefix="/dashboard", include_in_schema=False, dependencies=[Depends(get_current_user)])
@@ -31,12 +35,18 @@ def customers_page(
     user: DemoUser = Depends(get_current_user),
     customer_service: CustomerService = Depends(get_customer_service),
     session: Session = Depends(get_db_session),
+    vehicle_service: VehicleService = Depends(get_vehicle_service),
 ) -> HTMLResponse:
     """Render the customer management page."""
     return templates.TemplateResponse(
         request,
         "dashboard/customers.html",
-        {"request": request, "user": user, "customers": customer_service.list_customers(session)},
+        {
+            "request": request,
+            "user": user,
+            "customers": customer_service.list_customers(session),
+            "vehicles": vehicle_service.list_vehicles(session),
+        },
     )
 
 
@@ -72,7 +82,11 @@ def create_customer_partial(
     return templates.TemplateResponse(
         request,
         "dashboard/partials/customer_list.html",
-        {"request": request, "customers": customers},
+        {
+            "request": request,
+            "customers": customers,
+            "vehicles": VehicleService().list_vehicles(session),
+        },
     )
 
 
@@ -110,7 +124,103 @@ def update_customer_partial(
     return templates.TemplateResponse(
         request,
         "dashboard/partials/customer_list.html",
-        {"request": request, "customers": customers},
+        {
+            "request": request,
+            "customers": customers,
+            "vehicles": VehicleService().list_vehicles(session),
+        },
+    )
+
+
+@router.post("/customers/{customer_id}/vehicles", response_class=HTMLResponse)
+def create_customer_vehicle_partial(
+    request: Request,
+    customer_id: int,
+    make: str = Form(...),
+    model: str = Form(...),
+    year: int | None = Form(default=None),
+    color: str = Form(default=""),
+    vehicle_type: str = Form(...),
+    vehicle_service: VehicleService = Depends(get_vehicle_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Create a vehicle for a specific customer and refresh the customer list."""
+    vehicle_service.create_vehicle(
+        session,
+        VehicleCreate(
+            customer_id=customer_id,
+            make=make,
+            model=model,
+            year=year,
+            color=color or None,
+            vehicle_type=vehicle_type,
+        ),
+    )
+    return templates.TemplateResponse(
+        request,
+        "dashboard/partials/customer_list.html",
+        {
+            "request": request,
+            "customers": CustomerService().list_customers(session),
+            "vehicles": vehicle_service.list_vehicles(session),
+        },
+    )
+
+
+@router.post("/vehicles/{vehicle_id}/edit", response_class=HTMLResponse)
+def update_customer_vehicle_partial(
+    request: Request,
+    vehicle_id: int,
+    customer_id: int = Form(...),
+    make: str = Form(...),
+    model: str = Form(...),
+    year: int | None = Form(default=None),
+    color: str = Form(default=""),
+    vehicle_type: str = Form(...),
+    vehicle_service: VehicleService = Depends(get_vehicle_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Update a vehicle and refresh the customer list."""
+    vehicle_service.update_vehicle(
+        session,
+        vehicle_id,
+        VehicleUpdate(
+            customer_id=customer_id,
+            make=make,
+            model=model,
+            year=year,
+            color=color or None,
+            vehicle_type=vehicle_type,
+        ),
+    )
+    return templates.TemplateResponse(
+        request,
+        "dashboard/partials/customer_list.html",
+        {
+            "request": request,
+            "customers": CustomerService().list_customers(session),
+            "vehicles": vehicle_service.list_vehicles(session),
+        },
+    )
+
+
+@router.post("/vehicles/{vehicle_id}/delete", response_class=HTMLResponse)
+def delete_customer_vehicle_partial(
+    request: Request,
+    vehicle_id: int,
+    vehicle_service: VehicleService = Depends(get_vehicle_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Delete a vehicle and refresh the customer list."""
+    vehicle_service.delete_vehicle(session, vehicle_id)
+    return templates.TemplateResponse(
+        request,
+        "dashboard/partials/customer_list.html",
+        {
+            "request": request,
+            "customers": CustomerService().list_customers(session),
+            "vehicles": vehicle_service.list_vehicles(session),
+        },
     )
 
 
@@ -121,6 +231,7 @@ def appointments_page(
     appointment_service: AppointmentService = Depends(get_appointment_service),
     customer_service: CustomerService = Depends(get_customer_service),
     employee_service: EmployeeService = Depends(get_employee_service),
+    package_service: PackageService = Depends(get_package_service),
     vehicle_service: VehicleService = Depends(get_vehicle_service),
     session: Session = Depends(get_db_session),
 ) -> HTMLResponse:
@@ -131,6 +242,7 @@ def appointments_page(
         "appointments": appointment_service.list_appointments(session),
         "customers": customer_service.list_customers(session),
         "employees": employee_service.list_employees(session),
+        "packages": package_service.list_packages(session),
         "vehicles": vehicle_service.list_vehicles(session),
         "statuses": list(AppointmentStatus),
     }
@@ -143,31 +255,83 @@ def create_appointment_partial(
     customer_id: int = Form(...),
     vehicle_id: int = Form(...),
     employee_id: int | None = Form(default=None),
+    package_id: int = Form(...),
     scheduled_at: str = Form(...),
     service_address: str = Form(...),
-    price_cents: int = Form(...),
-    service_name: str = Form(...),
     appointment_service: AppointmentService = Depends(get_appointment_service),
+    package_service: PackageService = Depends(get_package_service),
     session: Session = Depends(get_db_session),
 ) -> HTMLResponse:
     """Create an appointment and return the updated appointment list partial."""
+    package = package_service.get_package(session, package_id)
     appointment_service.create_appointment(
         session,
         AppointmentCreate(
             customer_id=customer_id,
             vehicle_id=vehicle_id,
             employee_id=employee_id,
+            package_id=package.id,
             scheduled_at=datetime.fromisoformat(scheduled_at),
             service_address=service_address,
-            price_cents=price_cents,
-            service_name=service_name,
+            price_cents=package.base_price_cents,
         ),
     )
     appointments = appointment_service.list_appointments(session)
     return templates.TemplateResponse(
         request,
         "dashboard/partials/appointment_list.html",
-        {"request": request, "appointments": appointments},
+        {
+            "request": request,
+            "appointments": appointments,
+            "customers": CustomerService().list_customers(session),
+            "employees": EmployeeService().list_employees(session),
+            "packages": PackageService().list_packages(session),
+            "vehicles": VehicleService().list_vehicles(session),
+        },
+    )
+
+
+@router.post("/appointments/{appointment_id}/edit", response_class=HTMLResponse)
+def update_appointment_partial(
+    request: Request,
+    appointment_id: int,
+    customer_id: int = Form(...),
+    vehicle_id: int = Form(...),
+    employee_id: int | None = Form(default=None),
+    package_id: int = Form(...),
+    scheduled_at: str = Form(...),
+    service_address: str = Form(...),
+    appointment_service: AppointmentService = Depends(get_appointment_service),
+    package_service: PackageService = Depends(get_package_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Update an appointment and return the refreshed appointment list partial."""
+    package = package_service.get_package(session, package_id)
+    appointment_service.update_appointment(
+        session,
+        appointment_id,
+        AppointmentUpdate(
+            customer_id=customer_id,
+            vehicle_id=vehicle_id,
+            employee_id=employee_id,
+            package_id=package.id,
+            scheduled_at=datetime.fromisoformat(scheduled_at),
+            service_address=service_address,
+            price_cents=package.base_price_cents,
+        ),
+    )
+    appointments = appointment_service.list_appointments(session)
+    return templates.TemplateResponse(
+        request,
+        "dashboard/partials/appointment_list.html",
+        {
+            "request": request,
+            "appointments": appointments,
+            "customers": CustomerService().list_customers(session),
+            "employees": EmployeeService().list_employees(session),
+            "packages": PackageService().list_packages(session),
+            "vehicles": VehicleService().list_vehicles(session),
+        },
     )
 
 
@@ -185,7 +349,157 @@ def update_appointment_status_partial(
     return templates.TemplateResponse(
         request,
         "dashboard/partials/appointment_list.html",
-        {"request": request, "appointments": appointments},
+        {
+            "request": request,
+            "appointments": appointments,
+            "customers": CustomerService().list_customers(session),
+            "employees": EmployeeService().list_employees(session),
+            "packages": PackageService().list_packages(session),
+            "vehicles": VehicleService().list_vehicles(session),
+        },
+    )
+
+
+@router.get("/packages", response_class=HTMLResponse)
+def packages_page(
+    request: Request,
+    user: DemoUser = Depends(get_current_user),
+    package_service: PackageService = Depends(get_package_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Render the package admin page."""
+    return templates.TemplateResponse(
+        request,
+        "dashboard/packages.html",
+        {"request": request, "user": user, "packages": package_service.list_packages(session)},
+    )
+
+
+@router.post("/packages", response_class=HTMLResponse)
+def create_package_partial(
+    request: Request,
+    name: str = Form(...),
+    base_price_cents: int = Form(...),
+    duration_minutes: int = Form(...),
+    package_service: PackageService = Depends(get_package_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Create a package and return the refreshed package page."""
+    package_service.create_package(
+        session,
+        PackageCreate(
+            name=name,
+            base_price_cents=base_price_cents,
+            duration_minutes=duration_minutes,
+        ),
+    )
+    return templates.TemplateResponse(
+        request,
+        "dashboard/packages.html",
+        {"request": request, "packages": package_service.list_packages(session)},
+    )
+
+
+@router.post("/packages/{package_id}/edit", response_class=HTMLResponse)
+def update_package_partial(
+    request: Request,
+    package_id: int,
+    name: str = Form(...),
+    base_price_cents: int = Form(...),
+    duration_minutes: int = Form(...),
+    package_service: PackageService = Depends(get_package_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Update a package and return the refreshed package page."""
+    package_service.update_package(
+        session,
+        package_id,
+        PackageUpdate(
+            name=name,
+            base_price_cents=base_price_cents,
+            duration_minutes=duration_minutes,
+        ),
+    )
+    return templates.TemplateResponse(
+        request,
+        "dashboard/packages.html",
+        {"request": request, "packages": package_service.list_packages(session)},
+    )
+
+
+@router.post("/packages/{package_id}/delete", response_class=HTMLResponse)
+def delete_package_partial(
+    request: Request,
+    package_id: int,
+    package_service: PackageService = Depends(get_package_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Delete a package and return the refreshed package page."""
+    package_service.delete_package(session, package_id)
+    return templates.TemplateResponse(
+        request,
+        "dashboard/packages.html",
+        {"request": request, "packages": package_service.list_packages(session)},
+    )
+
+
+@router.post("/employees", response_class=HTMLResponse)
+def create_employee_partial(
+    request: Request,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    role: str = Form(...),
+    phone: str = Form(...),
+    email: str = Form(default=""),
+    employee_service: EmployeeService = Depends(get_employee_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Create an employee and return the refreshed employee page."""
+    employee_service.create_employee(
+        session,
+        EmployeeCreate(
+            first_name=first_name,
+            last_name=last_name,
+            role=role,
+            phone=phone,
+            email=email or None,
+        ),
+    )
+    return templates.TemplateResponse(
+        request,
+        "dashboard/employees.html",
+        {"request": request, "employees": employee_service.list_employees(session)},
+    )
+
+
+@router.post("/employees/{employee_id}/edit", response_class=HTMLResponse)
+def update_employee_partial(
+    request: Request,
+    employee_id: int,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    role: str = Form(...),
+    phone: str = Form(...),
+    email: str = Form(default=""),
+    employee_service: EmployeeService = Depends(get_employee_service),
+    session: Session = Depends(get_db_session),
+) -> HTMLResponse:
+    """Update an employee and return the refreshed employee page."""
+    employee_service.update_employee(
+        session,
+        employee_id,
+        EmployeeUpdate(
+            first_name=first_name,
+            last_name=last_name,
+            role=role,
+            phone=phone,
+            email=email or None,
+        ),
+    )
+    return templates.TemplateResponse(
+        request,
+        "dashboard/employees.html",
+        {"request": request, "employees": employee_service.list_employees(session)},
     )
 
 

@@ -51,3 +51,9 @@ class VehicleService:
         session.commit()
         session.refresh(vehicle)
         return vehicle
+
+    def delete_vehicle(self, session: Session, vehicle_id: int) -> None:
+        """Delete an existing vehicle."""
+        vehicle = self.get_vehicle(session, vehicle_id)
+        session.delete(vehicle)
+        session.commit()

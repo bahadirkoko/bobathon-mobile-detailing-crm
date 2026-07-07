@@ -13,6 +13,7 @@ from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 from app.services.customers import CustomerService
 from app.services.employees import EmployeeService
 from app.services.exceptions import NotFoundError, ValidationError
+from app.services.packages import PackageService
 from app.services.storage import AppointmentPhotoStorageService
 from app.services.vehicles import VehicleService
 
@@ -25,12 +26,14 @@ class AppointmentService:
         customer_service: CustomerService | None = None,
         employee_service: EmployeeService | None = None,
         vehicle_service: VehicleService | None = None,
+        package_service: PackageService | None = None,
         photo_storage: AppointmentPhotoStorageService | None = None,
     ) -> None:
         """Initialize service dependencies."""
         self.customer_service = customer_service or CustomerService()
         self.employee_service = employee_service or EmployeeService()
         self.vehicle_service = vehicle_service or VehicleService(self.customer_service)
+        self.package_service = package_service or PackageService()
         self.photo_storage = photo_storage or AppointmentPhotoStorageService()
 
     def list_appointments(self, session: Session) -> list[Appointment]:
@@ -42,6 +45,7 @@ class AppointmentService:
                 selectinload(Appointment.customer),
                 selectinload(Appointment.vehicle),
                 selectinload(Appointment.employee),
+                selectinload(Appointment.package),
             )
             .order_by(Appointment.scheduled_at.desc())
         )
@@ -56,6 +60,7 @@ class AppointmentService:
                 selectinload(Appointment.customer),
                 selectinload(Appointment.vehicle),
                 selectinload(Appointment.employee),
+                selectinload(Appointment.package),
             )
             .where(Appointment.id == appointment_id)
         )
@@ -71,6 +76,7 @@ class AppointmentService:
             customer_id=payload.customer_id,
             vehicle_id=payload.vehicle_id,
             employee_id=payload.employee_id,
+            package_id=payload.package_id,
         )
         appointment = Appointment(**payload.model_dump())
         session.add(appointment)
@@ -90,11 +96,13 @@ class AppointmentService:
         customer_id = data.get("customer_id", appointment.customer_id)
         vehicle_id = data.get("vehicle_id", appointment.vehicle_id)
         employee_id = data.get("employee_id", appointment.employee_id)
+        package_id = data.get("package_id", appointment.package_id)
         self._validate_relationships(
             session=session,
             customer_id=customer_id,
             vehicle_id=vehicle_id,
             employee_id=employee_id,
+            package_id=package_id,
         )
         for field, value in data.items():
             setattr(appointment, field, value)
@@ -147,11 +155,13 @@ class AppointmentService:
         customer_id: int,
         vehicle_id: int,
         employee_id: int | None,
+        package_id: int,
     ) -> None:
         """Validate linked records and ownership rules."""
         self.customer_service.get_customer(session, customer_id)
         vehicle = self.vehicle_service.get_vehicle(session, vehicle_id)
         if vehicle.customer_id != customer_id:
             raise ValidationError("Vehicle must belong to the selected customer.")
+        self.package_service.get_package(session, package_id)
         if employee_id is not None:
             self.employee_service.get_employee(session, employee_id)

@@ -1,7 +1,23 @@
 # Normalized Schema Refactor Plan
 
 ## Goal
-Refactor the current CRM data model from the initial demo-oriented shape into a more normalized relational structure while keeping the existing demo auth flow unchanged. This refactor will be implemented in six explicit stages with checkpoints between them.
+Refactor the current CRM data model from the initial demo-oriented shape into a more normalized relational structure while keeping the existing demo auth flow unchanged. For the hackathon submission, implementation stopped after Stage 3 due to time constraints; Stages 4–6 were explicitly descoped.
+
+## Hackathon final state
+The final submitted schema state includes:
+- normalized `Customer`
+- normalized `Employee`
+- normalized `Vehicle`
+- new `Package` catalog
+- `Appointment.package_id` replacing free-text `service_name`
+
+The following planned work was intentionally not implemented for the submission:
+- `AddOn`
+- `appointment_add_ons`
+- appointment date/time split
+- appointment address split
+- pricing snapshot refactor beyond current `price_cents`
+- expanded appointment photo uploader fields
 
 ## Current -> Target table/class mapping
 
@@ -188,59 +204,14 @@ No attempt should be made to preserve existing demo data.
 - grep for leftover references: `service_name`
 - stop and report status before continuing
 
-### Stage 4: Add AddOn and `appointment_add_ons`
-**Scope**
-- create `AddOn` and `AppointmentAddOn`
-- create schemas/services
-- add basic UI support for selecting add-ons on appointment create/edit
+### Stage 4: Add AddOn and `appointment_add_ons` — descoped
+Descoped for the hackathon submission due to time constraints. No Stage 4 implementation was started or kept.
 
-**Files changing**
-- new add-on/join models, schemas, services
-- appointment service/routes/templates/tests
-- dashboard/public booking forms if add-ons are selectable there
+### Stage 5: Normalize Appointment — descoped
+Descoped for the hackathon submission due to time constraints. Appointment still uses the current interim fields such as `scheduled_at`, `service_address`, and `price_cents`.
 
-**Validation after stage**
-- compileall
-- pytest
-- grep for leftover references to old single-service assumptions where relevant
-
-### Stage 5: Normalize Appointment
-**Scope**
-- split `scheduled_at` into `appointment_date` + `appointment_time`
-- split `service_address` into street/city/state/zipcode
-- replace `price_cents` with `base_price_cents`, `discount_cents`, `final_amount_cents`
-- add `started_at`, `cancelled_at`, `cancellation_reason`
-
-**Files changing**
-- appointment model/schema/service/routes/templates/tests
-- public booking and dashboard appointment forms
-- report template and appointment list partials
-
-**Validation after stage**
-- compileall
-- pytest
-- grep for leftover references: `scheduled_at`, `service_address`, `price_cents`
-
-### Stage 6: Expand AppointmentPhoto
-**Scope**
-- rename `tag` to `photo_tag`
-- rename `created_at` to `uploaded_at`
-- add `employee_id_uploaded`
-- update photo upload flow and report rendering
-
-**Files changing**
-- `app/models/appointment.py`
-- `app/schemas/appointment.py`
-- `app/services/storage.py`
-- `app/services/appointments.py`
-- HTML upload/report routes and templates
-- tests
-
-**Checkpoint after stage**
-- compileall
-- pytest
-- grep for leftover references: old photo field names
-- stop and report status before moving to bug-fix work
+### Stage 6: Expand AppointmentPhoto — descoped
+Descoped for the hackathon submission due to time constraints. Appointment photos remain in the current interim shape.
 
 ## Implementation constraints to preserve
 - Keep auth and browser demo login unchanged for this refactor
@@ -250,7 +221,7 @@ No attempt should be made to preserve existing demo data.
 - Keep PostgreSQL as the intended runtime DB, even if some tests use isolated SQLite fixtures
 
 ## Definition of done for the refactor
-- All six stages completed with requested checkpoints
-- No leftover references to replaced field names after each stage
-- App compiles and pytest passes after each stage
+- Stages 1–3 completed with requested checkpoints
+- Stages 4–6 explicitly descoped and documented
+- Stage 3 state accepted as the final hackathon submission baseline
 - `PROMPTS.md` updated at each major decision/checkpoint

@@ -6,6 +6,7 @@ from pydantic import Field
 
 from app.models.enums import AppointmentPhotoTag, AppointmentStatus
 from app.schemas.base import ORMBaseModel
+from app.schemas.package import PackageRead
 
 
 class AppointmentCreate(ORMBaseModel):
@@ -14,11 +15,11 @@ class AppointmentCreate(ORMBaseModel):
     customer_id: int
     vehicle_id: int
     employee_id: int | None = None
+    package_id: int
     scheduled_at: datetime
     service_address: str = Field(min_length=1, max_length=500)
     status: AppointmentStatus = AppointmentStatus.SCHEDULED
     price_cents: int = Field(ge=0)
-    service_name: str = Field(min_length=1, max_length=255)
 
 
 class AppointmentUpdate(ORMBaseModel):
@@ -27,11 +28,11 @@ class AppointmentUpdate(ORMBaseModel):
     customer_id: int | None = None
     vehicle_id: int | None = None
     employee_id: int | None = None
+    package_id: int | None = None
     scheduled_at: datetime | None = None
     service_address: str | None = Field(default=None, min_length=1, max_length=500)
     status: AppointmentStatus | None = None
     price_cents: int | None = Field(default=None, ge=0)
-    service_name: str | None = Field(default=None, min_length=1, max_length=255)
     completed_at: datetime | None = None
 
 
@@ -51,12 +52,13 @@ class AppointmentRead(ORMBaseModel):
     customer_id: int
     vehicle_id: int
     employee_id: int | None = None
+    package_id: int
     scheduled_at: datetime
     service_address: str
     status: AppointmentStatus
     price_cents: int
-    service_name: str
     completed_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
+    package: PackageRead
     photos: list[AppointmentPhotoRead] = []

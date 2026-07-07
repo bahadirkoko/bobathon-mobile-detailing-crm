@@ -31,6 +31,58 @@
           </form>
         </td>
       </tr>
+      <tr>
+        <td colspan="5">
+          <div class="grid grid-2">
+            <div>
+              <h3>Vehicles for {{ customer.first_name }}</h3>
+              <table class="table">
+                <thead><tr><th>Make</th><th>Model</th><th>Year</th><th>Color</th><th>Type</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {% for vehicle in vehicles if vehicle.customer_id == customer.id %}
+                  <tr>
+                    <td>{{ vehicle.make }}</td>
+                    <td>{{ vehicle.model }}</td>
+                    <td>{{ vehicle.year or '-' }}</td>
+                    <td>{{ vehicle.color or '-' }}</td>
+                    <td>{{ vehicle.vehicle_type }}</td>
+                    <td>
+                      <form hx-post="/dashboard/vehicles/{{ vehicle.id }}/edit" hx-target="#customer-list" hx-swap="outerHTML">
+                        <input type="hidden" name="customer_id" value="{{ customer.id }}" />
+                        <input type="text" name="make" value="{{ vehicle.make }}" required />
+                        <input type="text" name="model" value="{{ vehicle.model }}" required />
+                        <input type="number" name="year" value="{{ vehicle.year or '' }}" min="1900" max="2100" />
+                        <input type="text" name="color" value="{{ vehicle.color or '' }}" />
+                        <input type="text" name="vehicle_type" value="{{ vehicle.vehicle_type }}" required />
+                        <div class="actions">
+                          <button type="submit">Update Vehicle</button>
+                        </div>
+                      </form>
+                      <form hx-post="/dashboard/vehicles/{{ vehicle.id }}/delete" hx-target="#customer-list" hx-swap="outerHTML">
+                        <button type="submit">Delete Vehicle</button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr><td colspan="6" class="muted">No vehicles for this customer yet.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <h3>Add Vehicle</h3>
+              <form hx-post="/dashboard/customers/{{ customer.id }}/vehicles" hx-target="#customer-list" hx-swap="outerHTML">
+                <input type="text" name="make" placeholder="Make" required />
+                <input type="text" name="model" placeholder="Model" required />
+                <input type="number" name="year" placeholder="Year" min="1900" max="2100" />
+                <input type="text" name="color" placeholder="Color" />
+                <input type="text" name="vehicle_type" placeholder="Vehicle type" required />
+                <button type="submit">Save Vehicle</button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </tr>
       {% else %}
       <tr><td colspan="5" class="muted">No customers yet.</td></tr>
       {% endfor %}

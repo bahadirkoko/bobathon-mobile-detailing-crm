@@ -1,6 +1,12 @@
 """Shared dependency helpers for routes."""
 
-from app.services import AppointmentService, CustomerService, EmployeeService, VehicleService
+from app.services import (
+    AppointmentService,
+    CustomerService,
+    EmployeeService,
+    PackageService,
+    VehicleService,
+)
 
 
 def get_customer_service() -> CustomerService:
@@ -16,6 +22,11 @@ def get_employee_service() -> EmployeeService:
 def get_vehicle_service() -> VehicleService:
     """Return the vehicle service instance."""
     return VehicleService()
+
+
+def get_package_service() -> PackageService:
+    """Return the package service instance."""
+    return PackageService()
 
 
 def get_appointment_service() -> AppointmentService:

@@ -20,13 +20,13 @@ class Appointment(Base):
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=False)
     vehicle_id: Mapped[int] = mapped_column(ForeignKey("vehicles.id"), nullable=False)
     employee_id: Mapped[int | None] = mapped_column(ForeignKey("employees.id"), nullable=True)
+    package_id: Mapped[int] = mapped_column(ForeignKey("packages.id"), nullable=False)
     scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     service_address: Mapped[str] = mapped_column(String(500), nullable=False)
     status: Mapped[AppointmentStatus] = mapped_column(
         Enum(AppointmentStatus), nullable=False, default=AppointmentStatus.SCHEDULED
     )
     price_cents: Mapped[int] = mapped_column(Integer, nullable=False)
-    service_name: Mapped[str] = mapped_column(String(255), nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
@@ -38,6 +38,7 @@ class Appointment(Base):
     customer = relationship("Customer", back_populates="appointments")
     vehicle = relationship("Vehicle", back_populates="appointments")
     employee = relationship("Employee", back_populates="appointments")
+    package = relationship("Package", back_populates="appointments")
     photos = relationship(
         "AppointmentPhoto", back_populates="appointment", cascade="all, delete-orphan"
     )

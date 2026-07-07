@@ -19,9 +19,11 @@
         <option value="">Unassigned</option>
         {% for employee in employees %}<option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }}</option>{% endfor %}
       </select>
+      <select name="package_id" required>
+        <option value="">Select package</option>
+        {% for package in packages %}<option value="{{ package.id }}">{{ package.name }} — ${{ '%.2f' | format(package.base_price_cents / 100) }}</option>{% endfor %}
+      </select>
       <input type="datetime-local" name="scheduled_at" required />
-      <input type="text" name="service_name" placeholder="Service name" required />
-      <input type="number" name="price_cents" placeholder="Price in cents" min="0" required />
       <input type="text" name="service_address" placeholder="Service address" required />
       <button type="submit">Save Appointment</button>
     </form>

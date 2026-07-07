@@ -78,8 +78,66 @@ This file records user prompts and concise summaries of Bob's responses for the 
 - **Prompt:** Complete Stage 1 only, then stop and report compileall, pytest, and grep results before moving to Stage 2.
   **Summary:** Stage 1 code changes are in place: Customer and Employee were normalized across models, schemas, service inputs, routes, templates, and service tests. `python3 -m compileall app tests` passed; `pytest` could not run in this environment because the `pytest` command is not installed; leftover `full_name` references remain only in demo auth code, which is intentionally out of scope for this refactor.
 
+- **Prompt:** Approve the Stage 1 checkpoint and proceed with Stage 2 only.
+  **Summary:** Started Stage 2 of the normalization refactor, focused on replacing the current vehicle shape with the normalized vehicle model and updating all direct references before the next checkpoint.
+
+- **Prompt:** Complete Stage 2 only, then stop and report compileall, pytest, and grep results before moving to Stage 3.
+  **Summary:** Stage 2 code changes are in place: Vehicle was normalized from `vehicle_size`/`notes` to `vehicle_type` plus `created_at`, and all direct references were updated across schemas, booking flow, dashboard views, and service tests. `python3 -m compileall app tests` passed; `python3 -m pytest` could not run because `pytest` is not installed in this environment; grep found no leftover `vehicle_size` or `notes` references.
+
+- **Prompt:** Approve the Stage 2 checkpoint and proceed with Stage 3 only.
+  **Summary:** Started Stage 3 of the normalization refactor, focused on introducing the package catalog and replacing direct appointment service-name usage with `package_id` relationships before the next checkpoint.
+
+- **Prompt:** Complete Stage 3 only, then stop and report compileall, pytest, and grep results before moving to Stage 4.
+  **Summary:** Stage 3 code changes are in place: `Package` was added and `Appointment` now uses `package_id` instead of `service_name`, with route, template, schema, service, and service-test updates to select packages and snapshot package price into appointments. `python3 -m compileall app tests` passed; `python3 -m pytest` could not run because `pytest` is not installed in this environment; grep found no leftover `service_name` references.
+
+- **Prompt:** Skip Stage 4 and do not proceed to Stages 5 or 6. Treat the Stage 3 state as the final hackathon submission and update the plan/log accordingly.
+  **Summary:** Locked the Stage 3 schema state as the final hackathon scope. Stages 4–6 were explicitly descoped due to time constraints, and no partial Stage 4 implementation was kept.
+
+- **Prompt:** Small low-risk UI polish only: reorder the base nav and visually group the booking form into labeled sections without adding any JS wizard logic. Then run compileall and confirm booking still creates customer/vehicle/appointment.
+  **Summary:** Started a minimal UI-only pass focused on navigation order and a sectioned single-page booking form, explicitly avoiding stateful frontend changes.
+
+- **Prompt:** Finish the low-risk UI polish, run `python -m compileall app tests`, and confirm the booking form still submits and creates customer/vehicle/appointment.
+  **Summary:** Reordered the base navigation and turned the booking page into a single-form sectioned flow with labeled visual steps only. `python3 -m compileall app tests` passed, and the booking form field names still match [`create_booking()`](app/api/routes/public.py:38) exactly, so the submit path remains intact; live submission could not be re-executed in this environment without installed runtime dependencies.
+
+- **Prompt:** Three minimal follow-ups: remove the duplicate service-address field from booking, replace the datetime picker with date + hour dropdown 9–20 combined into `scheduled_at` on submit, and add a simple `/dashboard/packages` admin page with package list + create form plus nav link.
+  **Summary:** Started a small follow-up pass focused on booking-form simplification and a minimal package-admin UI, keeping reuse high and backend changes narrow.
+
+- **Prompt:** Finish the three quick follow-ups, run `python -m compileall app tests` after each, and confirm both the booking form submit path and the new `/dashboard/packages` page behavior.
+  **Summary:** Completed the three requested low-risk changes: removed the duplicate booking address field, switched booking to date + hour inputs combined into `scheduled_at` server-side, and added a minimal packages admin page plus nav link. `python3 -m compileall app tests` passed after each change batch; the booking form still posts the expected field names into [`create_booking()`](app/api/routes/public.py:38), and `/dashboard/packages` is now served by [`packages_page()`](app/api/routes/admin.py:196) with creation handled by [`create_package_partial()`](app/api/routes/admin.py:209), though live HTTP verification remains blocked here without installed runtime dependencies.
+
+- **Prompt:** Final time-constrained pass: audit existing CRUD for Customers, Appointments, Packages, and Employees; fill only the missing gaps in priority order; stop and report after each numbered item.
+  **Summary:** Started with item 1 only: checking whether Customer and Appointment edit capability already exists and filling only the remaining gaps before any lower-priority work.
+
+- **Prompt:** Finish priority item 1 only: fill any missing Customer and Appointment edit capability, then stop and report compile status before doing lower-priority work.
+  **Summary:** Audited existing CRUD and found Customer edit already present. Added the missing Appointment edit path with a simple inline HTMX update form in the appointment list and a matching update route that reuses [`AppointmentService.update_appointment()`](app/services/appointments.py:84). `python3 -m compileall app tests` passed.
+
+- **Prompt:** Continue to item 2 only after the item 1 checkpoint.
+  **Summary:** Started item 2 of the final pass: audit and fill any missing basic edit capability for Packages and Employees, then stop again before lower-priority delete or layout work.
+
+- **Prompt:** Finish item 2 only: add basic edit for Packages and Employees if missing, then stop and report compile status before item 3.
+  **Summary:** Audited item 2 and found both Package and Employee edit were missing in the dashboard UI. Added minimal update routes and simple form-based edit interactions on the packages and employees pages, reusing [`PackageService.update_package()`](app/services/packages.py:35) and [`EmployeeService.update_employee()`](app/services/employees.py:33). `python3 -m compileall app tests` passed.
+
+- **Prompt:** Approve item 3 only first, then report before item 4.
+  **Summary:** Started item 3 of the final pass: adding package delete as the only remaining low-risk delete operation before deciding on the optional vehicle nesting work.
+
+- **Prompt:** Finish item 3 only: add Package delete, then stop and report compile status before item 4.
+  **Summary:** Added the only requested low-risk delete path via [`PackageService.delete_package()`](app/services/packages.py:45), a matching dashboard route in [`app/api/routes/admin.py`](app/api/routes/admin.py:322), and a delete button on [`app/templates/dashboard/packages.html`](app/templates/dashboard/packages.html). `python3 -m compileall app tests` passed.
+
+- **Prompt:** For item 4, keep the standalone Vehicles page but add customer-scoped vehicle management under the customer admin view, preserving customer ownership and existing vehicle fields/CRUD expectations.
+  **Summary:** Started item 4 as a narrow UI/admin enhancement: customer-owned vehicle create/edit under the customer view, without reopening broader schema scope.
+
+- **Prompt:** Finish item 4 by adding customer-scoped vehicle management under the customer admin view while keeping the standalone Vehicles page intact.
+  **Summary:** Added customer-owned vehicle create/edit UI under the customer list view, with refresh routes in [`app/api/routes/admin.py`](app/api/routes/admin.py) and nested vehicle sections in [`app/templates/dashboard/partials/customer_list.html`](app/templates/dashboard/partials/customer_list.html). Vehicle ownership still flows through `customer_id`, and the standalone Vehicles page remains in place. `python3 -m compileall app tests` passed.
+
+- **Prompt:** Proceed with create + edit only for employees, no delete.
+  **Summary:** Locked the safer follow-up scope: add vehicle delete under customer ownership, remove the standalone Vehicles tab/page exposure, and add employee create + edit only in the dashboard UI.
+
 - **Prompt:** Answers to open decisions: address, phone, and email should stay simple free-text fields with minimal validation; report page should use a labeled before/after gallery; employee status should be appointment status only. Proceed with implementation in Agent mode, sub-task 1 first, and log progress to [`PROMPTS.md`](PROMPTS.md) as we go.
   **Summary:** Locked the remaining MVP data and UI decisions, then started sub-task 1 to create the initial repository scaffold and configuration surface.
+
+- **Prompt:** continue
+  **Summary:** Verified the last dashboard follow-up changes, confirmed vehicle delete is now wired into the customer-scoped vehicle management UI, the Vehicles nav tab is removed from [`app/templates/base.html`](app/templates/base.html), and employees now have create + edit only on [`app/templates/dashboard/employees.html`](app/templates/dashboard/employees.html). `python3 -m compileall app tests` passed.
+
 
 
 ## DevOps/CI

@@ -9,11 +9,13 @@ from app.models.enums import AppointmentPhotoTag, AppointmentStatus, EmployeeRol
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 from app.schemas.customer import CustomerCreate
 from app.schemas.employee import EmployeeCreate
+from app.schemas.package import PackageCreate
 from app.schemas.vehicle import VehicleCreate
 from app.services import (
     AppointmentService,
     CustomerService,
     EmployeeService,
+    PackageService,
     ValidationError,
     VehicleService,
 )
@@ -23,8 +25,9 @@ def _seed_dependencies(
     session: Session,
     customer_service: CustomerService,
     employee_service: EmployeeService,
+    package_service: PackageService,
     vehicle_service: VehicleService,
-) -> tuple[int, int, int]:
+) -> tuple[int, int, int, int]:
     customer = customer_service.create_customer(
         session,
         CustomerCreate(first_name="Client", last_name="One", phone="555", email=None, default_street_address="123 Main", default_city="Austin", default_state="TX", default_zipcode="78701"),
@@ -39,11 +42,21 @@ def _seed_dependencies(
             email=None,
         ),
     )
+    package = package_service.create_package(
+        session,
+        PackageCreate(
+            name="Full Detail",
+            description="Complete detail",
+            base_price_cents=25000,
+            duration_minutes=180,
+            is_active=True,
+        ),
+    )
     vehicle = vehicle_service.create_vehicle(
         session,
-        VehicleCreate(customer_id=customer.id, make="BMW", model="X5", vehicle_size="suv"),
+        VehicleCreate(customer_id=customer.id, make="BMW", model="X5", vehicle_type="suv"),
     )
-    return customer.id, employee.id, vehicle.id
+    return customer.id, employee.id, package.id, vehicle.id
 
 
 def test_create_update_complete_and_photo_upload(
@@ -51,14 +64,16 @@ def test_create_update_complete_and_photo_upload(
     appointment_service: AppointmentService,
     customer_service: CustomerService,
     employee_service: EmployeeService,
+    package_service: PackageService,
     vehicle_service: VehicleService,
     upload_root: Path,
 ) -> None:
     """Appointments support CRUD-like updates, completion, and photo persistence."""
-    customer_id, employee_id, vehicle_id = _seed_dependencies(
+    customer_id, employee_id, package_id, vehicle_id = _seed_dependencies(
         session,
         customer_service,
         employee_service,
+        package_service,
         vehicle_service,
     )
     appointment = appointment_service.create_appointment(
@@ -67,17 +82,17 @@ def test_create_update_complete_and_photo_upload(
             customer_id=customer_id,
             vehicle_id=vehicle_id,
             employee_id=employee_id,
+            package_id=package_id,
             scheduled_at=datetime(2025, 1, 1, 10, 0, 0),
             service_address="123 Detail Lane",
             price_cents=25000,
-            service_name="Full Detail",
         ),
     )
 
     updated = appointment_service.update_appointment(
         session,
         appointment.id,
-        AppointmentUpdate(service_name="Interior Detail"),
+        AppointmentUpdate(price_cents=30000),
     )
     completed = appointment_service.update_appointment_status(
         session,
@@ -92,7 +107,8 @@ def test_create_update_complete_and_photo_upload(
         b"demo-bytes",
     )
 
-    assert updated.service_name == "Interior Detail"
+    assert updated.price_cents == 30000
+    assert updated.package_id == package_id
     assert completed.completed_at is not None
     assert photo.file_path.startswith("static/uploads/")
     assert any(upload_root.iterdir())
@@ -103,13 +119,15 @@ def test_vehicle_must_belong_to_selected_customer(
     appointment_service: AppointmentService,
     customer_service: CustomerService,
     employee_service: EmployeeService,
+    package_service: PackageService,
     vehicle_service: VehicleService,
 ) -> None:
     """Appointments reject mismatched customer and vehicle relationships."""
-    customer_id, employee_id, vehicle_id = _seed_dependencies(
+    customer_id, employee_id, package_id, vehicle_id = _seed_dependencies(
         session,
         customer_service,
         employee_service,
+        package_service,
         vehicle_service,
     )
     other_customer = customer_service.create_customer(
@@ -133,10 +151,10 @@ def test_vehicle_must_belong_to_selected_customer(
                 customer_id=other_customer.id,
                 vehicle_id=vehicle_id,
                 employee_id=employee_id,
+                package_id=package_id,
                 scheduled_at=datetime(2025, 1, 1, 10, 0, 0),
                 service_address="123 Detail Lane",
                 price_cents=25000,
-                service_name="Full Detail",
             ),
         )
     except ValidationError:

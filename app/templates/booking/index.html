@@ -8,26 +8,51 @@
     <h2>Book a Mobile Detail</h2>
     <p class="muted">Demo flow: create customer, vehicle, and appointment in one step.</p>
     <form hx-post="/booking" hx-target="#booking-result" hx-swap="innerHTML">
-      <input type="text" name="customer_first_name" placeholder="Customer first name" required />
-      <input type="text" name="customer_last_name" placeholder="Customer last name" required />
-      <input type="text" name="customer_phone" placeholder="Phone" required />
-      <input type="email" name="customer_email" placeholder="Email optional" />
+      <div>
+        <h3>1. Schedule &amp; Location</h3>
+        <p class="muted">Choose the appointment time and where the mobile detail should happen.</p>
+      </div>
+      <input type="date" name="appointment_date" required />
+      <select name="appointment_hour" required>
+        <option value="">Select hour</option>
+        {% for hour in range(9, 21) %}<option value="{{ hour }}">{{ hour }}:00</option>{% endfor %}
+      </select>
       <input type="text" name="customer_street_address" placeholder="Street address" required />
       <input type="text" name="customer_city" placeholder="City" required />
       <input type="text" name="customer_state" placeholder="State" required />
       <input type="text" name="customer_zipcode" placeholder="Zip code" required />
+
+      <div>
+        <h3>2. Customer Info</h3>
+        <p class="muted">Enter the customer contact details for the booking.</p>
+      </div>
+      <input type="text" name="customer_first_name" placeholder="Customer first name" required />
+      <input type="text" name="customer_last_name" placeholder="Customer last name" required />
+      <input type="text" name="customer_phone" placeholder="Phone" required />
+      <input type="email" name="customer_email" placeholder="Email optional" />
+
+      <div>
+        <h3>3. Vehicle Info</h3>
+        <p class="muted">Capture the vehicle details for the appointment.</p>
+      </div>
       <input type="text" name="vehicle_make" placeholder="Vehicle make" required />
       <input type="text" name="vehicle_model" placeholder="Vehicle model" required />
-      <select name="vehicle_size" required>
+      <select name="vehicle_type" required>
         <option value="">Select vehicle size</option>
         <option value="sedan">Sedan</option>
         <option value="suv">SUV</option>
         <option value="truck">Truck</option>
       </select>
-      <input type="text" name="service_name" placeholder="Service name" required />
-      <input type="number" name="price_cents" placeholder="Price in cents" min="0" required />
-      <input type="text" name="service_address" placeholder="Service address" required />
-      <input type="datetime-local" name="scheduled_at" required />
+
+      <div>
+        <h3>4. Package</h3>
+        <p class="muted">Choose the detailing package for this booking.</p>
+      </div>
+      <select name="package_id" required>
+        <option value="">Select package</option>
+        {% for package in packages %}<option value="{{ package.id }}">{{ package.name }} — ${{ '%.2f' | format(package.base_price_cents / 100) }}</option>{% endfor %}
+      </select>
+
       <button type="submit">Book Appointment</button>
     </form>
   </div>

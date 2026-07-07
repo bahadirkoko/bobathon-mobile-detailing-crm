@@ -3,23 +3,52 @@
 {% block title %}Employees{% endblock %}
 
 {% block content %}
-<section class="card">
-  <h2>Employees</h2>
-  <table class="table">
-    <thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Phone</th><th>Email</th></tr></thead>
-    <tbody>
-      {% for employee in employees %}
-      <tr>
-        <td>#{{ employee.id }}</td>
-        <td>{{ employee.first_name }} {{ employee.last_name }}</td>
-        <td>{{ employee.role.value }}</td>
-        <td>{{ employee.phone }}</td>
-        <td>{{ employee.email or '-' }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="5" class="muted">No employees yet.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Create Employee</h2>
+    <form method="post" action="/dashboard/employees">
+      <input type="text" name="first_name" placeholder="First name" required />
+      <input type="text" name="last_name" placeholder="Last name" required />
+      <select name="role" required>
+        <option value="admin">admin</option>
+        <option value="technician">technician</option>
+      </select>
+      <input type="text" name="phone" placeholder="Phone" required />
+      <input type="email" name="email" placeholder="Email optional" />
+      <button type="submit">Save Employee</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Employees</h2>
+    <table class="table">
+      <thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Phone</th><th>Email</th><th>Edit</th></tr></thead>
+      <tbody>
+        {% for employee in employees %}
+        <tr>
+          <td>#{{ employee.id }}</td>
+          <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+          <td>{{ employee.role.value }}</td>
+          <td>{{ employee.phone }}</td>
+          <td>{{ employee.email or '-' }}</td>
+          <td>
+            <form method="post" action="/dashboard/employees/{{ employee.id }}/edit">
+              <input type="text" name="first_name" value="{{ employee.first_name }}" required />
+              <input type="text" name="last_name" value="{{ employee.last_name }}" required />
+              <select name="role" required>
+                <option value="admin" {% if employee.role.value == 'admin' %}selected{% endif %}>admin</option>
+                <option value="technician" {% if employee.role.value == 'technician' %}selected{% endif %}>technician</option>
+              </select>
+              <input type="text" name="phone" value="{{ employee.phone }}" required />
+              <input type="email" name="email" value="{{ employee.email or '' }}" />
+              <button type="submit">Update</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="muted">No employees yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </section>
 {% endblock %}

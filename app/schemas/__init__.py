@@ -8,6 +8,7 @@ from app.schemas.appointment import (
 )
 from app.schemas.customer import CustomerCreate, CustomerRead, CustomerUpdate
 from app.schemas.employee import EmployeeCreate, EmployeeRead, EmployeeUpdate
+from app.schemas.package import PackageCreate, PackageRead, PackageUpdate
 from app.schemas.vehicle import VehicleCreate, VehicleRead, VehicleUpdate
 
 __all__ = [
@@ -21,6 +22,9 @@ __all__ = [
     "EmployeeCreate",
     "EmployeeRead",
     "EmployeeUpdate",
+    "PackageCreate",
+    "PackageRead",
+    "PackageUpdate",
     "VehicleCreate",
     "VehicleRead",
     "VehicleUpdate",

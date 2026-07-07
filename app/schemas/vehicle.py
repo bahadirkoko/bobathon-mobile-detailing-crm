@@ -1,5 +1,7 @@
 """Vehicle schemas."""
 
+from datetime import datetime
+
 from pydantic import Field
 
 from app.schemas.base import ORMBaseModel
@@ -13,8 +15,7 @@ class VehicleCreate(ORMBaseModel):
     model: str = Field(min_length=1, max_length=255)
     year: int | None = Field(default=None, ge=1900, le=2100)
     color: str | None = Field(default=None, max_length=255)
-    vehicle_size: str = Field(min_length=1, max_length=100)
-    notes: str | None = Field(default=None, max_length=500)
+    vehicle_type: str = Field(min_length=1, max_length=100)
 
 
 class VehicleUpdate(ORMBaseModel):
@@ -25,8 +26,7 @@ class VehicleUpdate(ORMBaseModel):
     model: str | None = Field(default=None, min_length=1, max_length=255)
     year: int | None = Field(default=None, ge=1900, le=2100)
     color: str | None = Field(default=None, max_length=255)
-    vehicle_size: str | None = Field(default=None, min_length=1, max_length=100)
-    notes: str | None = Field(default=None, max_length=500)
+    vehicle_type: str | None = Field(default=None, min_length=1, max_length=100)
 
 
 class VehicleRead(ORMBaseModel):
@@ -38,5 +38,5 @@ class VehicleRead(ORMBaseModel):
     model: str
     year: int | None = None
     color: str | None = None
-    vehicle_size: str
-    notes: str | None = None
+    vehicle_type: str
+    created_at: datetime

@@ -6,15 +6,15 @@
 <section class="card">
   <h2>Vehicles</h2>
   <table class="table">
-    <thead><tr><th>ID</th><th>Owner</th><th>Vehicle</th><th>Size</th><th>Notes</th></tr></thead>
+    <thead><tr><th>ID</th><th>Owner</th><th>Vehicle</th><th>Type</th><th>Created</th></tr></thead>
     <tbody>
       {% for vehicle in vehicles %}
       <tr>
         <td>#{{ vehicle.id }}</td>
         <td>{{ vehicle.customer.first_name }} {{ vehicle.customer.last_name }}</td>
         <td>{{ vehicle.make }} {{ vehicle.model }}</td>
-        <td>{{ vehicle.vehicle_size }}</td>
-        <td>{{ vehicle.notes or '-' }}</td>
+        <td>{{ vehicle.vehicle_type }}</td>
+        <td>{{ vehicle.created_at }}</td>
       </tr>
       {% else %}
       <tr><td colspan="5" class="muted">No vehicles yet.</td></tr>

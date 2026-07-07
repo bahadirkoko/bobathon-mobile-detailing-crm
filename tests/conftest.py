@@ -10,12 +10,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.db.base import Base
-from app.models import Appointment, AppointmentPhoto, Customer, Employee, Vehicle
+from app.models import Appointment, AppointmentPhoto, Customer, Employee, Package, Vehicle
 from app.services import (
     AppointmentService,
     AppointmentPhotoStorageService,
     CustomerService,
     EmployeeService,
+    PackageService,
     VehicleService,
 )
 
@@ -54,6 +55,12 @@ def employee_service() -> EmployeeService:
 
 
 @pytest.fixture()
+def package_service() -> PackageService:
+    """Provide the package service instance."""
+    return PackageService()
+
+
+@pytest.fixture()
 def vehicle_service(customer_service: CustomerService) -> VehicleService:
     """Provide the vehicle service instance."""
     return VehicleService(customer_service)
@@ -63,9 +70,10 @@ def vehicle_service(customer_service: CustomerService) -> VehicleService:
 def appointment_service(
     customer_service: CustomerService,
     employee_service: EmployeeService,
+    package_service: PackageService,
     vehicle_service: VehicleService,
     upload_root: Path,
 ) -> AppointmentService:
     """Provide the appointment service instance."""
     storage = AppointmentPhotoStorageService(str(upload_root))
-    return AppointmentService(customer_service, employee_service, vehicle_service, storage)
+    return AppointmentService(customer_service, employee_service, vehicle_service, package_service, storage)

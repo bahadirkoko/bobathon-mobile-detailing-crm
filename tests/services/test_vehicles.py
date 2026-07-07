@@ -20,7 +20,7 @@ def test_create_and_update_vehicle(
 
     vehicle = vehicle_service.create_vehicle(
         session,
-        VehicleCreate(customer_id=customer.id, make="Tesla", model="Model 3", vehicle_size="sedan"),
+        VehicleCreate(customer_id=customer.id, make="Tesla", model="Model 3", vehicle_type="sedan"),
     )
     updated = vehicle_service.update_vehicle(
         session,
@@ -29,6 +29,7 @@ def test_create_and_update_vehicle(
     )
 
     assert updated.color == "Blue"
+    assert updated.vehicle_type == "sedan"
     assert vehicle_service.list_vehicles(session)[0].id == vehicle.id
 
 
@@ -40,7 +41,7 @@ def test_create_vehicle_requires_known_customer(
     try:
         vehicle_service.create_vehicle(
             session,
-            VehicleCreate(customer_id=999, make="Ford", model="F-150", vehicle_size="truck"),
+            VehicleCreate(customer_id=999, make="Ford", model="F-150", vehicle_type="truck"),
         )
     except NotFoundError:
         return

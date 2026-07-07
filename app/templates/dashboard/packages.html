@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Packages{% endblock %}
+
+{% block content %}
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Create Package</h2>
+    <form method="post" action="/dashboard/packages">
+      <input type="text" name="name" placeholder="Package name" required />
+      <input type="number" name="base_price_cents" placeholder="Base price in cents" min="0" required />
+      <input type="number" name="duration_minutes" placeholder="Duration minutes" min="1" required />
+      <button type="submit">Save Package</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Existing Packages</h2>
+    <table class="table">
+      <thead><tr><th>Name</th><th>Price</th><th>Duration</th><th>Edit</th><th>Delete</th></tr></thead>
+      <tbody>
+        {% for package in packages %}
+        <tr>
+          <td>{{ package.name }}</td>
+          <td>${{ '%.2f' | format(package.base_price_cents / 100) }}</td>
+          <td>{{ package.duration_minutes }} min</td>
+          <td>
+            <form method="post" action="/dashboard/packages/{{ package.id }}/edit">
+              <input type="text" name="name" value="{{ package.name }}" required />
+              <input type="number" name="base_price_cents" value="{{ package.base_price_cents }}" min="0" required />
+              <input type="number" name="duration_minutes" value="{{ package.duration_minutes }}" min="1" required />
+              <button type="submit">Update</button>
+            </form>
+          </td>
+          <td>
+            <form method="post" action="/dashboard/packages/{{ package.id }}/delete">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="muted">No packages yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
